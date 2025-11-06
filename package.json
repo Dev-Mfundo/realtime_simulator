@@ -1,0 +1,26 @@
+{
+  "name": "realtime_simulator",
+  "version": "1.0.0",
+  "description": "forex market real-time price simulator",
+  "main": "./src/app.js",
+  "scripts": {
+    "start": "cross-env ENVIRONMENT=prod node ./src.app.js",
+    "dev": "cross-env ENVIRONMENT=dev nodemon ./src/app.js",
+    "test": "cross-env ENVRIRONMENT=test jasmine"
+  },
+  "keywords": [],
+  "author": "aaron jiane",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "jasmine": "^5.12.0",
+    "prettier": "^3.6.2",
+    "superset": "^2.0.1"
+  },
+  "dependencies": {
+    "cross-env": "^10.1.0",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10"
+  }
+}
