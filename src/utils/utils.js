@@ -2,14 +2,14 @@ const fs = require("fs");
 const path = require("path");
 
 const validateSymbol = (symbol) => {
-  if (!symbol) {
+  if (!symbol || symbol.length === 0) {
     throw new Error("Symbol input missing!");
   }
   if (typeof symbol !== "string") {
-    throw new Error("Symbol input should be a string ");
+    throw new Error("Symbol input should be a string");
   }
   symbol = symbol.toLowerCase();
-  if (!/^[A-Za-z0-9]+$/.test(symbol)) {
+  if (!/^[a-z0-9]+$/.test(symbol)) {
     throw new Error(
       "Symbol can only consist of alphanumeric characters and with no spaces",
     );
@@ -23,4 +23,20 @@ const validateSymbol = (symbol) => {
   return symbol;
 };
 
-module.exports = { validateSymbol };
+const validateTimeframe = (timeframe) => {
+  const allowedTimeframe = ["1m", "5m", "30m", "1h", "4h", "1d"];
+  if (!timeframe) {
+    throw new Error("Timeframe input missing");
+  }
+  if (typeof timeframe !== "string") {
+    throw new Error("Timeframe input should be a string");
+  }
+  if (!/^[a-z0-9]+$/.test(timeframe) || !allowedTimeframe.includes(timeframe)) {
+    throw new Error(
+      `Invalid timeframe: allowed inputs ${allowedTimeframe.join(", ")}`,
+    );
+  }
+  return timeframe;
+};
+
+module.exports = { validateSymbol, validateTimeframe };
