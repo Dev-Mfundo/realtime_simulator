@@ -24,7 +24,7 @@ const validateSymbol = (symbol) => {
 };
 
 const validateTimeframe = (timeframe) => {
-  const allowedTimeframe = ["1m", "5m", "30m", "1h", "4h", "1d"];
+  const allowedTimeframe = ["1m", "5m", "15m", "30m", "1h", "4h", "1d"];
   if (!timeframe) {
     throw new Error("Timeframe input missing");
   }
