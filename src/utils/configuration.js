@@ -1,5 +1,7 @@
 require('dotenv').config()
 
+const API_KEY = process.env.API_KEY
+
 const corsOptions={
 	origin: process.env.CORS_ORIGIN,
 	methods: ["POST"],
@@ -7,4 +9,4 @@ const corsOptions={
 }
 
 
-module.exports={corsOptions}
+module.exports={corsOptions, API_KEY}
