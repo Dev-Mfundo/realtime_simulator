@@ -48,7 +48,7 @@ describe("validateTimeframe", () => {
     );
   });
   it("should throw an error for timeframe not included in data", () => {
-    const allowedTimeframe = ["1m", "5m", "30m", "1h", "4h", "1d"];
+    const allowedTimeframe = ["1m", "5m", "15m", "30m", "1h", "4h", "1d"];
     expect(() => validateTimeframe("10m")).toThrowError(
       `Invalid timeframe: allowed inputs ${allowedTimeframe.join(", ")}`,
     );

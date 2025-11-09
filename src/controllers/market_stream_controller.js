@@ -12,7 +12,13 @@ const getSymbolData = async(req,res,next)=>{
 
 	const pair = new SymbolData(symbol)
 	const data = await pair.getSymbolDataByTimeframe(timeframe)
-	res.status(200).json(data)
+	if(data.length === 0){
+        return res.status(404).json({
+            success: false,
+            error: "No valid data found for the given symbol and timeframe",
+        });
+    }
+	res.status(200).json(data[0])
 
 
     }catch(error){

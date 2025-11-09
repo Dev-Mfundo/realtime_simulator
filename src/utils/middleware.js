@@ -5,21 +5,20 @@ const unknownEndpoint=(req, res)=>{
 	})
 }
 
-const errorHandler=(error, req, res, next)=>{
-	if(error.name === 'ValidationError'){
-		return res.status(400).json({
-			success: false,
-			error: error.message
-		})
-	}
-	else if(error.name === 'CastError'){
-		return res.status(400).json({
-			success: false,
-			error: error.message
-		})
-	}
+const errorHandler = (error, req, res, next) => {
+  if (
+    error.name === 'ValidationError' ||
+    error.name === 'CastError' ||
+    error instanceof Error
+  ) {
+    return res.status(400).json({
+      success: false,
+      error: error.message,
+    });
+  }
 
-	next(error)
-}
+  next(error);
+};
+
 
 module.exports={unknownEndpoint, errorHandler}

@@ -58,7 +58,7 @@ describe("Utility Functions", () => {
 
   describe("validateTimeframe", () => {
     it("should return valid timeframe", () => {
-      const timeframes = ["1m", "5m", "30m", "1h", "4h", "1d"];
+      const timeframes = ["1m", "5m", "15m", "30m", "1h", "4h", "1d"];
 
       timeframes.forEach((tf) => {
         const result = validateTimeframe(tf);
@@ -92,13 +92,13 @@ describe("Utility Functions", () => {
 
     it("should throw error for invalid timeframe", () => {
       expect(() => validateTimeframe("2h")).toThrowError(
-        "Invalid timeframe: allowed inputs 1m, 5m, 30m, 1h, 4h, 1d",
+        "Invalid timeframe: allowed inputs 1m, 5m, 15m, 30m, 1h, 4h, 1d",
       );
       expect(() => validateTimeframe("invalid")).toThrowError(
-        "Invalid timeframe: allowed inputs 1m, 5m, 30m, 1h, 4h, 1d",
+        "Invalid timeframe: allowed inputs 1m, 5m, 15m, 30m, 1h, 4h, 1d",
       );
       expect(() => validateTimeframe("1H")).toThrowError(
-        "Invalid timeframe: allowed inputs 1m, 5m, 30m, 1h, 4h, 1d",
+        "Invalid timeframe: allowed inputs 1m, 5m, 15m, 30m, 1h, 4h, 1d",
       );
     });
   });
