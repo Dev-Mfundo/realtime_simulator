@@ -18,7 +18,7 @@ const getSymbolData = async(req,res,next)=>{
             error: "No valid data found for the given symbol and timeframe",
         });
     }
-	res.status(200).json(data[0])
+	res.status(200).json(data)
 
 
     }catch(error){
