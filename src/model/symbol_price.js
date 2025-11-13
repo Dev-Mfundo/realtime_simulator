@@ -1,7 +1,12 @@
 const {pool} = require('../utils/configuration')
 
 const setupTimescaleTable = async () => {
+try {
   await pool.query('CREATE EXTENSION IF NOT EXISTS timescaledb;');
+} catch (err) {
+  console.error('Failed to create extension:', err);
+}
+
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS SymbolPrice (
@@ -17,7 +22,8 @@ const setupTimescaleTable = async () => {
   `);
 
   await pool.query(`
-    SELECT create_hypertable('SymbolPrice', 'timestamp', if_not_exists => TRUE);
+SELECT create_hypertable('public.SymbolPrice', 'timestamp', if_not_exists => TRUE);
+
   `);
 
   await pool.query(`
@@ -34,8 +40,13 @@ const setupTimescaleTable = async () => {
 
   await pool.query(`CREATE INDEX IF NOT EXISTS idx_symbol ON SymbolPrice(symbol);`);
   await pool.query(`CREATE INDEX IF NOT EXISTS idx_timestamp ON SymbolPrice(timestamp DESC);`);
+
+  console.log('Hypertable created and policies applied.');
+
+  await pool.end();
+
 };
 
 
 
-module.exports={createSymbolPriceTable}
+module.exports={setupTimescaleTable}

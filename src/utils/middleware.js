@@ -48,24 +48,12 @@ const limiter = rateLimit({
   skipSuccessfulRequests: false, 
 });
 
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, os.tmpdir());
-  },
-  filename: (req, file, cb) => {
-    const { symbol, timeframe} = req.body;
-    if (!symbol || typeof symbol !== "string") {
-      return cb(new Error("File processing failed: invalid or missing symbol"));
-    }
-    if (!timeframe || typeof timeframe !== "string") {
-      return cb(new Error("File processing failed: invalid or missing timeframe"));
-    }
-    const safeSymbol = symbol.toString().toUpperCase().replace(/[^A-Z0-9]/g, "");
-    const safeTimeframe = timeframe.toString().toLowerCase().replace(/[^a-z0-9]/g, "");
-
-    const filename = `${safeSymbol}_${safeTimeframe}.csv`;
-    cb(null, filename);
-  },
+    cb(null, os.tmpdir()); // Save to temp directory
+  }
+  // No filename function — multer will auto-generate a safe name
 });
 
 const upload = multer({
@@ -77,9 +65,9 @@ const upload = multer({
     cb(null, true);
   },
   limits: {
-    fileSize: 10 * 1024 * 1024,
-  },
-})
+    fileSize: 10 * 1024 * 1024, // 10MB
+  }
+});
 
 
-module.exports={upload,,unknownEndpoint, errorHandler, keyAuth, limiter}
+module.exports={upload,unknownEndpoint, errorHandler, keyAuth, limiter}

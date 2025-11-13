@@ -7,15 +7,26 @@ const {corsOptions} = require('./utils/configuration')
 const {getSymbolDataRoute} = require('./routes/market_stream_route')
 const {uploadSymbolDataRoute} = require('./routes/symbol_price_route')
 const {unknownEndpoint, errorHandler, keyAuth, limiter} = require('./utils/middleware')
+const {setupTimescaleTable} = require('./model/symbol_price')
 
 app.use(express.json());
+
+(async () => {
+  try {
+    await setupTimescaleTable();
+    console.log('TimescaleDB setup completed.');
+  } catch (err) {
+    console.error('Setup failed:', err.message);
+  }
+})();
+
 
 app.use(limiter)
 app.use(hpp())
 app.use(helmet())
 app.use(cors(corsOptions))
 
-app.use('/api', keyAuth, symbolDataRoute)
+app.use('/api', keyAuth, getSymbolDataRoute)
 app.use('/api', uploadSymbolDataRoute)
 app.use(unknownEndpoint)
 app.use(errorHandler)

@@ -1,56 +1,87 @@
 const fs = require("fs");
-const { validateSymbol, validateTimeframe } = require("../../src/utils/utils");
-describe("validateSymbol", () => {
-  it("should return lowercase symbol if valid and directory exists", () => {
-    spyOn(fs, "existsSync").and.returnValue(true);
-    const result = validateSymbol("SP500");
-    expect(result).toBe("sp500");
+const {validateSymbol, validateTimeframe} = require("../../src/utils/helpers");
+
+describe("Validate Functions", () => {
+
+  describe("validateSymbol", () => {
+    it("should return valid symbol", () => {
+      const result = validateSymbol("btcusdt");
+      expect(result).toBe("btcusdt");
+    });
+
+    it("should convert symbol to lowercase", () => {
+      const result = validateSymbol("BTCUSDT");
+      expect(result).toBe("btcusdt");
+    });
+
+    it("should throw error for empty symbol", () => {
+      expect(() => validateSymbol("")).toThrowError("Symbol input missing!");
+    });
+
+    it("should throw error for non-string symbol", () => {
+      expect(() => validateSymbol(123)).toThrowError(
+        "Symbol input should be a string",
+      );
+      expect(() => validateSymbol(null)).toThrowError("Symbol input missing!");
+      expect(() => validateSymbol(undefined)).toThrowError(
+        "Symbol input missing!",
+      );
+    });
+
+    it("should throw error for symbol with invalid characters", () => {
+      expect(() => validateSymbol("btc-usdt")).toThrowError(
+        "Symbol can only consist of alphanumeric characters and with no spaces",
+      );
+      expect(() => validateSymbol("btc usdt")).toThrowError(
+        "Symbol can only consist of alphanumeric characters and with no spaces",
+      );
+    });
   });
 
-  it("should throw error if symbol is missing", () => {
-    expect(() => validateSymbol()).toThrowError("Symbol input missing!");
-  });
+  describe("validateTimeframe", () => {
+    it("should return valid timeframe", () => {
+      const timeframes = ["1m", "5m", "15m", "30m", "1h", "4h", "1d"];
 
-  it("should throw error if symbol is not a string", () => {
-    expect(() => validateSymbol(123)).toThrowError(
-      "Symbol input should be a string",
-    );
-  });
+      timeframes.forEach((tf) => {
+        const result = validateTimeframe(tf);
+        expect(result).toBe(tf);
+      });
+    });
 
-  it("should throw error if symbol contains non-alphanumeric characters", () => {
-    expect(() => validateSymbol("sp 500")).toThrowError(
-      "Symbol can only consist of alphanumeric characters and with no spaces",
-    );
-    expect(() => validateSymbol("sp-500")).toThrowError(
-      "Symbol can only consist of alphanumeric characters and with no spaces",
-    );
-  });
+    it("should throw error for empty timeframe", () => {
+      expect(() => validateTimeframe("")).toThrowError(
+        "Timeframe input missing",
+      );
+      expect(() => validateTimeframe(null)).toThrowError(
+        "Timeframe input missing",
+      );
+      expect(() => validateTimeframe(undefined)).toThrowError(
+        "Timeframe input missing",
+      );
+    });
 
-  it("should throw error if directory does not exist", () => {
-    spyOn(fs, "existsSync").and.returnValue(false);
-    expect(() => validateSymbol("sp500")).toThrowError(
-      "sp500 is not included in the data",
-    );
-  });
-});
+    it("should throw error for non-string timeframe", () => {
+      expect(() => validateTimeframe(123)).toThrowError(
+        "Timeframe input should be a string",
+      );
+      expect(() => validateTimeframe({})).toThrowError(
+        "Timeframe input should be a string",
+      );
+      expect(() => validateTimeframe([])).toThrowError(
+        "Timeframe input should be a string",
+      );
+    });
 
-describe("validateTimeframe", () => {
-  it("should return timeframe if valid", () => {
-    const result = validateTimeframe("5m");
-    expect(result).toBe("5m");
-  });
-  it("should throw an error for undefined timeframe", () => {
-    expect(() => validateTimeframe()).toThrowError("Timeframe input missing");
-  });
-  it("should throw an error for non-string timeframe", () => {
-    expect(() => validateTimeframe(6)).toThrowError(
-      "Timeframe input should be a string",
-    );
-  });
-  it("should throw an error for timeframe not included in data", () => {
-    const allowedTimeframe = ["1m", "5m", "15m", "30m", "1h", "4h", "1d"];
-    expect(() => validateTimeframe("10m")).toThrowError(
-      `Invalid timeframe: allowed inputs ${allowedTimeframe.join(", ")}`,
-    );
+    it("should throw error for invalid timeframe", () => {
+      expect(() => validateTimeframe("2h")).toThrowError(
+        "Invalid timeframe: allowed inputs 1m, 5m, 15m, 30m, 1h, 4h, 1d",
+      );
+      expect(() => validateTimeframe("invalid")).toThrowError(
+        "Invalid timeframe: allowed inputs 1m, 5m, 15m, 30m, 1h, 4h, 1d",
+      );
+      expect(() => validateTimeframe("1H")).toThrowError(
+        "Invalid timeframe: allowed inputs 1m, 5m, 15m, 30m, 1h, 4h, 1d",
+      );
+    });
   });
 });

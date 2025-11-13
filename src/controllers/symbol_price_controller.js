@@ -2,8 +2,10 @@ const fs = require('fs');
 const format = require('pg-format');
 const { pool } = require('../utils/configuration');
 const { SymbolDataStream } = require('../services/market_stream');
+const {setupTimescaleTable} = require('../model/symbol_price')
 
 const insertTicksBulk = async (ticks) => {
+  await setupTimescaleTable()
   const values = ticks.map(tick => [
     tick.symbol,
     tick.timestamp,
@@ -26,12 +28,20 @@ const insertTicksBulk = async (ticks) => {
 const insertSymbolPrice = async (req, res, next) => {
   const { symbol, timeframe } = req.body;
 
-  if (!symbol || typeof symbol !== "string") {
-    return res.status(400).json({ success: false, message: "Invalid or missing symbol" });
+  if (!symbol) {
+    return res.status(400).json({ success: false, message: "Missing symbol" });
   }
 
-  if (!timeframe || typeof timeframe !== "string") {
-    return res.status(400).json({ success: false, message: "Invalid or missing timeframe" });
+  if (typeof symbol !== "string") {
+    return res.status(400).json({ success: false, message: "Invalid, symbol should be a string" });
+  }
+
+  if (!timeframe) {
+    return res.status(400).json({ success: false, message: "Missing timeframe" });
+  }
+
+  if (typeof timeframe !== "string") {
+    return res.status(400).json({ success: false, message: "Invalid, timeframe should be a string" });
   }
 
   if (!req.file || !req.file.path) {
