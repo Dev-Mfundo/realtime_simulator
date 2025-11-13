@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      POSTGRES_DB: $POSTGRES_DATABASE
+    volumes:
+      - realtime_simulator_data:/var/lib/postgresql/data
+
+  adminer:
+    depends_on:
+      - postgres
+    image: adminer:4.8.1 
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+
+volumes:
+  realtime_simulator_data:

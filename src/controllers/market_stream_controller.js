@@ -1,4 +1,4 @@
-const {SymbolData} = require('../services/market_stream')
+const {SymbolDataStream} = require('../services/market_stream')
 
 const getSymbolData = async(req,res,next)=>{
 	const {symbol, timeframe} = req.body
@@ -10,7 +10,7 @@ const getSymbolData = async(req,res,next)=>{
 		})
 	}
 
-	const pair = new SymbolData(symbol)
+	const pair = new SymbolDataStream(symbol)
 	const data = await pair.getSymbolDataByTimeframe(timeframe)
 	if(data.length === 0){
         return res.status(404).json({

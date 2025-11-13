@@ -4,7 +4,8 @@ const helmet = require('helmet')
 const cors = require('cors')
 const hpp = require('hpp')
 const {corsOptions} = require('./utils/configuration')
-const {symbolDataRoute} = require('./routes/market_stream_route')
+const {getSymbolDataRoute} = require('./routes/market_stream_route')
+const {uploadSymbolDataRoute} = require('./routes/symbol_price_route')
 const {unknownEndpoint, errorHandler, keyAuth, limiter} = require('./utils/middleware')
 
 app.use(express.json());
@@ -15,6 +16,7 @@ app.use(helmet())
 app.use(cors(corsOptions))
 
 app.use('/api', keyAuth, symbolDataRoute)
+app.use('/api', uploadSymbolDataRoute)
 app.use(unknownEndpoint)
 app.use(errorHandler)
 

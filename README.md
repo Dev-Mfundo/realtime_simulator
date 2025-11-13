@@ -14,9 +14,14 @@ npm run format    # Prettify code
 ### Environment Variables (.env)
 - Create a .env file in the root directory with the following keys:
 ```
-PORT=3000
-CORS_ORIGIN=https://frontend-domain.com
-API_KEY=secret_key
+PORT=xxxx
+POSTGRES_HOST=xxxx
+POSTGRES_USER=xxxx
+POSTGRES_PASSWORD=xxxx
+POSTGRES_DB=xxxxx
+POSTGRES_PORT=5432
+CORS_ORIGIN=https://frontend-domain
+API_KEY=xxxx
 ```
 
 ### Data
@@ -53,7 +58,7 @@ xauusd
 
 ###  API - Endpoint
 ```
-POST /api/market/v1/symbol/price
+POST /api/market/v1/symbol
 ```
 
  - Request - POST

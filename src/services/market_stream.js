@@ -1,28 +1,17 @@
-const path = require("path");
-const fs = require("fs");
-const readline = require("readline");
-const { validateSymbol, validateTimeframe } = require("../utils/utils");
+const fs = require('fs');
+const readline = require('readline');
+const { validateSymbol, validateTimeframe } = require('../utils/helpers');
 
-class SymbolData {
-  #symbolData;
-  #symbolDir;
+class SymbolDataStream {
+  static async fromFile(filePath, { symbol, timeframe }) {
+    if (!fs.existsSync(filePath)) {
+      throw new Error(`File not found: ${filePath}`);
+    }
 
-  constructor(symbol) {
-    this.symbol = validateSymbol(symbol);
-    this.#symbolDir = path.join(__dirname, `../history_data/${symbol}`);
-    this.#symbolData = (timeframe) => {
-      const filePath = `${this.#symbolDir}/${this.symbol}_${validateTimeframe(timeframe)}.csv`;
-      return fs.createReadStream(filePath, {
-        encoding: "utf-8",
-        highWaterMark: 1024,
-      });
-    };
-  }
-
-  async getSymbolDataByTimeframe(timeframe) {
-    let stream;
-
-    stream = this.#symbolData(timeframe);
+    const stream = fs.createReadStream(filePath, {
+      encoding: 'utf-8',
+      highWaterMark: 1024,
+    });
 
     const rl = readline.createInterface({
       input: stream,
@@ -31,29 +20,39 @@ class SymbolData {
 
     const data = [];
     let lineCount = 0;
+    let isHeader = true;
 
     for await (const line of rl) {
       lineCount++;
-      const parts = line.split("\t");
+      if (!line.trim()) continue;
 
-      if (parts.length !== 6) {
+      if (isHeader && line.toLowerCase().includes('open')) {
+        isHeader = false;
+        continue;
+      }
+
+      const parts = line.split('\t');
+
+      if (parts.length < 6) {
         console.warn(`Malformed line at ${lineCount}: ${line}`);
         continue;
       }
 
-      const [timestamp, open, high, low, close, volume] = parts;
+      const [timestamp, open, high, low, close, volume] = parts.map(v => v.trim());
 
       const parsed = {
-        timestamp,
+        symbol: validateSymbol(symbol),
+        timeframe: validateTimeframe(timeframe),
+        timestamp: parseInt(timestamp),
         open: parseFloat(open),
         high: parseFloat(high),
         low: parseFloat(low),
         close: parseFloat(close),
-        volume: parseInt(volume),
+        volume: parseFloat(volume),
       };
 
       if (
-        Object.values(parsed).some((val) => isNaN(val) && val !== timestamp)
+        Object.values(parsed).some(val => val === '' || (typeof val === 'number' && isNaN(val)))
       ) {
         console.warn(`Invalid numeric data at line ${lineCount}: ${line}`);
         continue;
@@ -62,8 +61,9 @@ class SymbolData {
       data.push(parsed);
     }
 
+    if (!data.length) throw new Error('No valid data found in CSV file');
     return data;
   }
 }
 
-module.exports = { SymbolData };
+module.exports = { SymbolDataStream };

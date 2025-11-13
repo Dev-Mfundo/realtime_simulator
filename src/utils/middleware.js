@@ -1,5 +1,7 @@
 const rateLimit = require('express-rate-limit')
 const {API_KEY} = require('./configuration')
+const multer = require('multer');
+const os = require('os');
 
 const unknownEndpoint=(req, res)=>{
 	res.status(404).json({
@@ -46,4 +48,38 @@ const limiter = rateLimit({
   skipSuccessfulRequests: false, 
 });
 
-module.exports={unknownEndpoint, errorHandler, keyAuth, limiter}
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, os.tmpdir());
+  },
+  filename: (req, file, cb) => {
+    const { symbol, timeframe} = req.body;
+    if (!symbol || typeof symbol !== "string") {
+      return cb(new Error("File processing failed: invalid or missing symbol"));
+    }
+    if (!timeframe || typeof timeframe !== "string") {
+      return cb(new Error("File processing failed: invalid or missing timeframe"));
+    }
+    const safeSymbol = symbol.toString().toUpperCase().replace(/[^A-Z0-9]/g, "");
+    const safeTimeframe = timeframe.toString().toLowerCase().replace(/[^a-z0-9]/g, "");
+
+    const filename = `${safeSymbol}_${safeTimeframe}.csv`;
+    cb(null, filename);
+  },
+});
+
+const upload = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype !== "text/csv") {
+      return cb(new Error("Invalid file format, only CSV allowed"));
+    }
+    cb(null, true);
+  },
+  limits: {
+    fileSize: 10 * 1024 * 1024,
+  },
+})
+
+
+module.exports={upload,,unknownEndpoint, errorHandler, keyAuth, limiter}
