@@ -27,7 +27,7 @@ const errorHandler = (error, req, res, next) => {
 
 const keyAuth = (req, res, next) => {
     const apiKey = req.headers['x-api-key'];
-  
+
     if (!apiKey || API_KEY !== apiKey) {
         return res.status(401).json({
           error: 'Unauthorized',
@@ -40,20 +40,20 @@ const keyAuth = (req, res, next) => {
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
-  message: { 
-    error: 'Too many requests, please try again later.' 
+  message: {
+    error: 'Too many requests, please try again later.'
   },
   standardHeaders: true,
   legacyHeaders: false,
-  skipSuccessfulRequests: false, 
+  skipSuccessfulRequests: false,
 });
 
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, os.tmpdir()); // Save to temp directory
+    cb(null, os.tmpdir());
   }
-  // No filename function — multer will auto-generate a safe name
+
 });
 
 const upload = multer({
@@ -65,7 +65,7 @@ const upload = multer({
     cb(null, true);
   },
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB
+    fileSize: 10 * 1024 * 1024,
   }
 });
 

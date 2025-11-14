@@ -10,9 +10,9 @@ try {
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS SymbolPrice (
-      id SERIAL PRIMARY KEY,
       symbol VARCHAR(15) NOT NULL,
-      timestamp TIMESTAMPTZ NOT NULL,
+      timeframe VARCHAR(3) NOT NULL,
+      timestamp TIMESTAMP NOT NULL,
       open NUMERIC NOT NULL,
       high NUMERIC NOT NULL,
       low NUMERIC NOT NULL,
@@ -30,20 +30,18 @@ SELECT create_hypertable('public.SymbolPrice', 'timestamp', if_not_exists => TRU
     ALTER TABLE SymbolPrice SET (timescaledb.compress, timescaledb.compress_segmentby = 'symbol');
   `);
 
-  await pool.query(`
-    SELECT add_compression_policy('SymbolPrice', INTERVAL '7 days');
-  `);
+  //await pool.query(`
+    //SELECT add_compression_policy('SymbolPrice', INTERVAL '7 days');
+  //`);
 
-  await pool.query(`
-    SELECT add_retention_policy('SymbolPrice', INTERVAL '90 days');
-  `);
+  //await pool.query(`
+    //SELECT add_retention_policy('SymbolPrice', INTERVAL '90 days');
+  //`);
 
-  await pool.query(`CREATE INDEX IF NOT EXISTS idx_symbol ON SymbolPrice(symbol);`);
+  await pool.query(`CREATE INDEX IF NOT EXISTS idx_symbol ON SymbolPrice(symbol, timeframe, timestamp DESC);`);
   await pool.query(`CREATE INDEX IF NOT EXISTS idx_timestamp ON SymbolPrice(timestamp DESC);`);
 
-  console.log('Hypertable created and policies applied.');
-
-  await pool.end();
+  console.log('Hypertable created');
 
 };
 

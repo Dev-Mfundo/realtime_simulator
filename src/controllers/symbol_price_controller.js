@@ -8,6 +8,7 @@ const insertTicksBulk = async (ticks) => {
   await setupTimescaleTable()
   const values = ticks.map(tick => [
     tick.symbol,
+    tick.timeframe,
     tick.timestamp,
     tick.open,
     tick.high,
@@ -17,7 +18,7 @@ const insertTicksBulk = async (ticks) => {
   ]);
 
   const query = format(`
-    INSERT INTO SymbolPrice(symbol, timestamp, open, high, low, close, volume)
+    INSERT INTO SymbolPrice(symbol, timeframe, timestamp, open, high, low, close, volume)
     VALUES %L
   `, values);
 
@@ -52,6 +53,7 @@ const insertSymbolPrice = async (req, res, next) => {
 
   try {
     const refinedData = await SymbolDataStream.fromFile(filePath, { symbol, timeframe });
+    console.log(refinedData[0])
     const result = await insertTicksBulk(refinedData);
     fs.unlinkSync(filePath);
     res.status(200).json({ success: true, message: result });

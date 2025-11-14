@@ -43,7 +43,7 @@ class SymbolDataStream {
       const parsed = {
         symbol: validateSymbol(symbol),
         timeframe: validateTimeframe(timeframe),
-        timestamp: parseInt(timestamp),
+        timestamp: timestamp,
         open: parseFloat(open),
         high: parseFloat(high),
         low: parseFloat(low),
