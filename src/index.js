@@ -16,7 +16,7 @@ app.use(express.json());
     await setupTimescaleTable();
     console.log('TimescaleDB setup completed.');
   } catch (err) {
-    console.error('Setup failed:', err.message);
+    console.error('Setup failed:', err);
   }
 })();
 
