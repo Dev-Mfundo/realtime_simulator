@@ -4,7 +4,7 @@ const helmet = require("helmet");
 const cors = require("cors");
 const hpp = require("hpp");
 const { corsOptions } = require("./utils/configuration");
-const { getSymbolDataRoute } = require("./routes/market_stream_route");
+const { getSymbolDataRoute } = require("./routes/insert_symbol_price_route");
 const { uploadSymbolDataRoute } = require("./routes/symbol_price_route");
 const {
   unknownEndpoint,
