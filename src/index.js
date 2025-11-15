@@ -16,14 +16,16 @@ const { setupTimescaleTable } = require("./model/symbol_price");
 
 app.use(express.json());
 
-(async () => {
+const initializeTimescaleDB = async (req, res, next) => {
   try {
     await setupTimescaleTable();
-    console.log("TimescaleDB setup completed.");
+    next();
   } catch (err) {
-    console.error("Setup failed:", err);
+    next(err);
   }
-})();
+};
+
+app.use(initializeTimescaleDB);
 
 app.use(limiter);
 app.use(hpp());

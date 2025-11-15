@@ -1,12 +1,7 @@
 const express = require("express");
-const uploadSymbolDataRoute = express.Router();
-const { insertSymbolPrice } = require("../controllers/get_symbol_price_controller");
-const { upload } = require("../utils/middleware");
+const getSymbolDataRoute = express.Router();
+const { getSymbolData } = require("../controllers/get_symbol_price_controller");
 
-uploadSymbolDataRoute.post(
-  "/market/v1/symbol/upload",
-  upload.single("file"),
-  insertSymbolPrice,
-);
+getSymbolDataRoute.post("/market/v1/symbol/query", getSymbolData);
 
-module.exports = { uploadSymbolDataRoute };
+module.exports = {getSymbolDataRoute};

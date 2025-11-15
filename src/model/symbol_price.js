@@ -9,9 +9,9 @@ const setupTimescaleTable = async () => {
 
     await pool.query(`
     CREATE TABLE IF NOT EXISTS SymbolPrice (
-      symbol VARCHAR(50) NOT NULL,
+      symbol TEXT NOT NULL,
       timeframe INT NOT NULL,
-      timestamp TIMESTAMP NOT NULL,
+      timestamp TIMESTAMPTZ NOT NULL,
       open NUMERIC(20,8) NOT NULL,
       high NUMERIC(20,8) NOT NULL,
       low NUMERIC(20,8) NOT NULL,

@@ -39,11 +39,7 @@ const errorHandler = (error, req, res, next) => {
       error: "Data constraint violation",
     });
   }
-
-  res.status(500).json({
-    success: false,
-    error: "Internal server error",
-  });
+  next(error)
 };
 
 const keyAuth = (req, res, next) => {

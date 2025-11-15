@@ -114,7 +114,13 @@ const insertSymbolData = async (ticks) => {
   const result = await pool.query(query);
   const inserted = result.rows.filter((row) => row.was_inserted).length;
   const updated = result.rows.length - inserted;
-  return `${inserted} new ticks inserted ${updated} existing ticks updated for ${values[0][0]}-${values[0][1]}`;
+  return {
+  symbol: values[0][0],
+  timeframe: values[0][1],
+  inserted: inserted,
+  updated: updated,
+  message: `${inserted} new ticks inserted, ${updated} existing ticks updated for ${values[0][0]}-${values[0][1]}`
+  }
 };
 
 module.exports = {
