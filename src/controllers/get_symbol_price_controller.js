@@ -10,4 +10,4 @@ const getSymbolPrice = async (req, res, next) => {
   }
 };
 
-module.exports = {};
+module.exports = {getSymbolPrice};
