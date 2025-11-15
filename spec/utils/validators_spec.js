@@ -1,8 +1,9 @@
-const fs = require("fs");
-const {validateSymbol, validateTimeframe} = require("../../src/utils/helpers");
+const {
+  validateSymbol,
+  validateTimeframe,
+} = require("../../src/utils/validators");
 
 describe("Validate Functions", () => {
-
   describe("validateSymbol", () => {
     it("should return valid symbol", () => {
       const result = validateSymbol("btcusdt");

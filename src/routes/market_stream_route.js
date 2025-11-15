@@ -1,7 +1,7 @@
-const express = require('express')
-const getSymbolDataRoute = express.Router()
-const {getSymbolData} = require('../controllers/market_stream_controller')
+const express = require("express");
+const getSymbolDataRoute = express.Router();
+const { getSymbolData } = require("../controllers/market_stream_controller");
 
-getSymbolDataRoute.post('/market/v1/symbol/query', getSymbolData)
+getSymbolDataRoute.post("/market/v1/symbol/query", getSymbolData);
 
-module.exports={getSymbolDataRoute}
+module.exports = { getSymbolDataRoute };

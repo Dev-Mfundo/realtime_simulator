@@ -1,12 +1,13 @@
-const {pool} = require('../utils/configuration')
+const { pool } = require("../utils/configuration");
+const { DatabaseError } = require("../utils/app_error");
 
 const setupTimescaleTable = async () => {
-    await pool.connect()
-try {
-  await pool.query('BEGIN')
-  await pool.query('CREATE EXTENSION IF NOT EXISTS timescaledb;');
+  await pool.connect();
+  try {
+    await pool.query("BEGIN");
+    await pool.query("CREATE EXTENSION IF NOT EXISTS timescaledb;");
 
-  await pool.query(`
+    await pool.query(`
     CREATE TABLE IF NOT EXISTS SymbolPrice (
       symbol VARCHAR(50) NOT NULL,
       timeframe INT NOT NULL,
@@ -21,17 +22,16 @@ try {
     );
   `);
 
-
-  await pool.query(`
+    await pool.query(`
 SELECT create_hypertable('SymbolPrice', 'timestamp', if_not_exists => TRUE, migrate_data => TRUE);
 
   `);
 
-  await pool.query(`
+    await pool.query(`
     ALTER TABLE SymbolPrice SET (timescaledb.compress, timescaledb.compress_segmentby = 'symbol, timeframe');
   `);
 
-  await pool.query(`
+    await pool.query(`
     SELECT add_compression_policy('SymbolPrice', INTERVAL '1 day', if_not_exists => TRUE)
     WHERE NOT EXISTS (
     SELECT 1 FROM timescaledb_information.compression_settings
@@ -39,7 +39,7 @@ SELECT create_hypertable('SymbolPrice', 'timestamp', if_not_exists => TRUE, migr
     );
   `);
 
-  await pool.query(`
+    await pool.query(`
     SELECT add_retention_policy('SymbolPrice', INTERVAL '90 days', if_not_exists => TRUE)
     WHERE NOT EXISTS (
     SELECT 1 FROM timescaledb_information.jobs
@@ -48,23 +48,18 @@ SELECT create_hypertable('SymbolPrice', 'timestamp', if_not_exists => TRUE, migr
     );
   `);
 
-  await pool.query(`
+    await pool.query(`
                    CREATE INDEX IF NOT EXISTS idx_symbol_price_main ON SymbolPrice(symbol, timeframe, timestamp DESC);`);
-  await pool.query(`
+    await pool.query(`
                    CREATE INDEX IF NOT EXISTS idx_symbol_price_compressed ON SymbolPrice(symbol, timestamp, timestamp DESC);
 
                    `);
 
-  await pool.query('COMMIT')
-  console.log("setup complete")
-}catch(error){
-    await pool.query("ROLLBACK")
-    console.error(error)
-    throw new Error("Database setup failed", error)
-}
-
+    await pool.query("COMMIT");
+  } catch (error) {
+    await pool.query("ROLLBACK");
+    throw new DatabaseError("Database setup failed", error);
+  }
 };
 
-
-
-module.exports={setupTimescaleTable}
+module.exports = { setupTimescaleTable };
