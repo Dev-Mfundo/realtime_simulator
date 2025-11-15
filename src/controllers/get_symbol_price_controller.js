@@ -1,6 +1,6 @@
 const { validateSymbol, validateTimeframe } = require("../utils/validators");
 
-const getSymbolPrice = async (req, res, next) => {
+const getSymbolData = async (req, res, next) => {
   const { symbol, timeframe } = req.body;
   const validSymbol = validateSymbol(symbol);
   const validTimeframe = validateTimeframe(timeframe);
@@ -10,4 +10,4 @@ const getSymbolPrice = async (req, res, next) => {
   }
 };
 
-module.exports = {getSymbolPrice};
+module.exports = {getSymbolData};
