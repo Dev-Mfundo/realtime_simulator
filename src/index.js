@@ -5,7 +5,7 @@ const cors = require("cors");
 const hpp = require("hpp");
 const { corsOptions } = require("./utils/configuration");
 const {uploadSymbolDataRoute} = require("./routes/insert_symbol_price_route");
-const {getSymbolDataRoute} = require("./routes/symbol_price_route");
+const {getSymbolDataRoute} = require("./routes/get_symbol_price_route");
 const {
   unknownEndpoint,
   errorHandler,
