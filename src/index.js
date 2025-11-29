@@ -33,7 +33,7 @@ app.use(helmet());
 app.use(cors(corsOptions));
 
 app.use("/api", keyAuth, getSymbolDataRoute);
-app.use("/api", uploadSymbolDataRoute);
+app.use("/api", keyAuth uploadSymbolDataRoute);
 app.use(unknownEndpoint);
 app.use(errorHandler);
 

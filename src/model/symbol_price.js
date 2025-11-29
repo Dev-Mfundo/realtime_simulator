@@ -40,7 +40,7 @@ SELECT create_hypertable('SymbolPrice', 'timestamp', if_not_exists => TRUE, migr
   `);
 
     await pool.query(`
-    SELECT add_retention_policy('SymbolPrice', INTERVAL '90 days', if_not_exists => TRUE)
+    SELECT add_retention_policy('SymbolPrice', INTERVAL '365 days', if_not_exists => TRUE)
     WHERE NOT EXISTS (
     SELECT 1 FROM timescaledb_information.jobs
     WHERE proc_name = 'policy_retention'

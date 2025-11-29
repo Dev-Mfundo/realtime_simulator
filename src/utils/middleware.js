@@ -47,8 +47,8 @@ const keyAuth = (req, res, next) => {
 
   if (!apiKey || API_KEY !== apiKey) {
     return res.status(401).json({
-      error: "Unauthorized",
-      message: "Invalid authentication credentials",
+      success: false,
+      error: "Unauthorised: invalid authentication credentials",
     });
   }
   next();

@@ -8,7 +8,7 @@ const {
   validateMultipleSymbols,
 } = require("./validators");
 
-const getSymbolPrice = async (symbol, timeframe, limit = 100) => {
+const getSymbolPrice = async (symbol, timeframe, limit = 2000) => {
   symbol = validateSymbol(symbol);
   timeframe = validateTimeframe(timeframe);
   limit = validateLimit(limit);
@@ -20,6 +20,9 @@ const getSymbolPrice = async (symbol, timeframe, limit = 100) => {
    LIMIT $3
   `;
   const result = await pool.query(query, [symbol, timeframe, limit]);
+  if(!result.rows){
+    throw new Error(`${symbol}: price data not found `)
+  }
   return result.rows;
 };
 
@@ -33,6 +36,9 @@ const getLatestPriceOnly = async (symbol, timeframe) => {
   LIMIT 1
   `;
   const result = await pool.query(query, [symbol, timeframe]);
+  if(!result.rows.[0]){
+    throw new Error(`${symbol}: price data not found `)
+  }
   return result.rows[0];
 };
 
@@ -65,10 +71,13 @@ const getPricesInRange = async (
     end,
     limit,
   ]);
+  if(!result.rows){
+    throw new Error(`${symbol}: price data not found `)
+  }
   return result.rows;
 };
 
-const getMultipleSymbols = async (symbols, timeframe, limit = 100) => {
+const getMultipleSymbols = async (symbols, timeframe, limit = 500) => {
   symbols = validateMultipleSymbols(symbols);
   timeframe = validateTimeframe(timeframe);
   limit = validateLimit(limit);

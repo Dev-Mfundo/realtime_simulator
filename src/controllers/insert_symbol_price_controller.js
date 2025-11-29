@@ -13,7 +13,7 @@ const insertSymbolPrice = async (req, res, next) => {
    const filePath = req.file.path;
   try {
     const symbol = validateSymbol(req.body.symbol);
-  const timeframe = validateTimeframe(req.body.timeframe);
+    const timeframe = validateTimeframe(req.body.timeframe);
 
     const refinedData = await SymbolDataStream.fromFile(filePath, {
       symbol: symbol,
