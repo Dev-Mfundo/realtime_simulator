@@ -57,6 +57,7 @@ docker compose up
 | POST   | `/api/market/v1/symbol/query/range` | Retrieve price data for a symbol within a specific time range |
 | GET    | `/api/market/v1/symbol/allSymbols` | Retrieve all available symbols |
 | POST   | `/api/market/v1/symbol/query` | Retrieve price data for a specific symbol (latest or filtered by criteria) |
+| POST   | `/api/market/v1/symbol/upload` | uploads price data for a specific symbol and timeframe (file) |
 
 
 1. Delete Symbol Data
