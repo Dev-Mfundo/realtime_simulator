@@ -6,10 +6,12 @@ const hpp = require("hpp");
 const { corsOptions } = require("./utils/configuration");
 const {uploadSymbolDataRoute} = require("./routes/insert_symbol_price_route");
 const {getSymbolDataRoute} = require("./routes/get_symbol_price_route");
+const {listAllSymbolsRoute} = require("./routes/list_symbols_route")
+const {getPricesInRangeRoute} = require("./routes/get_prices_in_range_route")
+const {deleteSymbolDataRoute} = require("./routes/delete_symbol_price_route")
 const {
   unknownEndpoint,
   errorHandler,
-  keyAuth,
   limiter,
 } = require("./utils/middleware");
 const { setupTimescaleTable } = require("./model/symbol_price");
@@ -25,6 +27,8 @@ const initializeTimescaleDB = async (req, res, next) => {
   }
 };
 
+
+
 app.use(initializeTimescaleDB);
 
 app.use(limiter);
@@ -32,8 +36,12 @@ app.use(hpp());
 app.use(helmet());
 app.use(cors(corsOptions));
 
-app.use("/api", keyAuth, getSymbolDataRoute);
-app.use("/api", keyAuth uploadSymbolDataRoute);
+app.use("/api", getSymbolDataRoute);
+app.use("/api", getPricesInRangeRoute);
+app.use("/api", listAllSymbolsRoute);
+app.use("/api", uploadSymbolDataRoute);
+app.use("/api", deleteSymbolDataRoute);
+
 app.use(unknownEndpoint);
 app.use(errorHandler);
 

@@ -1,20 +1,27 @@
+const {validateTimeframe} = require("../utils/validators")
+const {getSymbolData,ListAllSymbols} = require("../controllers/get_symbol_price_controller")
+const app = require("../index")
+const http = require("http")
+const {Server} = require("socket.io")
 
-// asithi 
+const server = http.createServer(app)
+
 const VOLATILITY = {
-  minute: 60000,
-  fiveMinutes: 300000,
-  fiftenMinutes: 900000,
-  thirtyminutes: 1800000,
-  oneHour: 3600000,
-  twoHours: 7200000,
-  fourHours: 14400000,
-  day: 86400000
+  1: 60000,
+  5: 300000,
+  15: 900000,
+  30: 1800000,
+  60: 3600000,
+  120: 7200000,
+  240: 14400000,
+  1440: 86400000
 }
+ 
+let intervalId;
 
-const realtimeOutput=(volatility)=>{
-	if(typeof volatility !== 'string'){
-		throw new Error("Volatility should be a string")
-	}
+const startRealtimeOutput=(volatilityInput)=>{
+
+	const volatilityInput = validateTimeframe(volatility)
 	
 	if(!Object.keys(VOLATILITY).includes(volatility)){
 		throw new Error(`Invalid volatility input, expected either of the following: ${Object.keys(VOLATILITY).join(", ")}`)
@@ -22,11 +29,14 @@ const realtimeOutput=(volatility)=>{
 
 	let count = 0
 	setInterval(()=>{
-		console.log(`${count} minutes elapesed`)
 	count++	
-	   },volatility)
+	   },VOLATILITY[volatility])
     
 }
 
-realtimeOutput("second")
-// 1, 5, 15, 30 , 60, 120, 240, 1440
+const stopRealtimeOutput=()=>{
+	if(intervalId){
+	clearInterval(startRealtimeOutput)
+	return true
+  }
+} 

@@ -1,88 +1,98 @@
 const {
-  validateSymbol,
-  validateTimeframe,
-} = require("../../src/utils/validators");
+  insertSymbolData,
+  getSymbolPrice,
+  getPricesInRange,
+  ListAllSymbols,
+  deleteSymbolByTimeframe,
+  deleteSymbol
+} = require("../../src/utils/helpers");
 
-describe("Validate Functions", () => {
-  describe("validateSymbol", () => {
-    it("should return valid symbol", () => {
-      const result = validateSymbol("btcusdt");
-      expect(result).toBe("btcusdt");
-    });
+const { pool } = require("../../src/utils/configuration");
 
-    it("should convert symbol to lowercase", () => {
-      const result = validateSymbol("BTCUSDT");
-      expect(result).toBe("btcusdt");
-    });
+describe("Helpers", () => {
 
-    it("should throw error for empty symbol", () => {
-      expect(() => validateSymbol("")).toThrowError("Symbol input missing!");
-    });
+  beforeEach(() => {
+    spyOn(pool, "query").and.stub();
+  });
 
-    it("should throw error for non-string symbol", () => {
-      expect(() => validateSymbol(123)).toThrowError(
-        "Symbol input should be a string",
-      );
-      expect(() => validateSymbol(null)).toThrowError("Symbol input missing!");
-      expect(() => validateSymbol(undefined)).toThrowError(
-        "Symbol input missing!",
-      );
-    });
+  describe("ListAllSymbols", () => {
+    it("should return list of distinct symbols", async () => {
+      pool.query.and.returnValue(Promise.resolve({ rows: [{ symbol: "btcusdt" }] }));
 
-    it("should throw error for symbol with invalid characters", () => {
-      expect(() => validateSymbol("btc-usdt")).toThrowError(
-        "Symbol can only consist of alphanumeric characters and with no spaces",
-      );
-      expect(() => validateSymbol("btc usdt")).toThrowError(
-        "Symbol can only consist of alphanumeric characters and with no spaces",
-      );
+      const result = await ListAllSymbols();
+      expect(result).toEqual([{ symbol: "btcusdt" }]);
+      expect(pool.query).toHaveBeenCalled();
     });
   });
 
-  describe("validateTimeframe", () => {
-    it("should return valid timeframe", () => {
-      const timeframes = ["1m", "5m", "15m", "30m", "1h", "4h", "1d"];
+  describe("getSymbolPrice", () => {
+    it("should query correct SQL with parameters", async () => {
+      pool.query.and.returnValue(Promise.resolve({ rows: [] }));
 
-      timeframes.forEach((tf) => {
-        const result = validateTimeframe(tf);
-        expect(result).toBe(tf);
-      });
+      const result = await getSymbolPrice("btcusdt", 60, 1);
+      expect(pool.query).toHaveBeenCalledWith(jasmine.any(String), ["btcusdt",60, 1]);
+      expect(result).toEqual([]);
     });
 
-    it("should throw error for empty timeframe", () => {
-      expect(() => validateTimeframe("")).toThrowError(
-        "Timeframe input missing",
-      );
-      expect(() => validateTimeframe(null)).toThrowError(
-        "Timeframe input missing",
-      );
-      expect(() => validateTimeframe(undefined)).toThrowError(
-        "Timeframe input missing",
-      );
-    });
-
-    it("should throw error for non-string timeframe", () => {
-      expect(() => validateTimeframe(123)).toThrowError(
-        "Timeframe input should be a string",
-      );
-      expect(() => validateTimeframe({})).toThrowError(
-        "Timeframe input should be a string",
-      );
-      expect(() => validateTimeframe([])).toThrowError(
-        "Timeframe input should be a string",
-      );
-    });
-
-    it("should throw error for invalid timeframe", () => {
-      expect(() => validateTimeframe("2h")).toThrowError(
-        "Invalid timeframe: allowed inputs 1m, 5m, 15m, 30m, 1h, 4h, 1d",
-      );
-      expect(() => validateTimeframe("invalid")).toThrowError(
-        "Invalid timeframe: allowed inputs 1m, 5m, 15m, 30m, 1h, 4h, 1d",
-      );
-      expect(() => validateTimeframe("1H")).toThrowError(
-        "Invalid timeframe: allowed inputs 1m, 5m, 15m, 30m, 1h, 4h, 1d",
-      );
+    it("should throw validation error for bad symbol", async () => {
+      await expectAsync(getSymbolPrice("", 60)).toBeRejected();
     });
   });
+
+  describe("getPricesInRange", () => {
+    it("should return prices within date range", async () => {
+      pool.query.and.returnValue(Promise.resolve({ rows: [{ timestamp: "2024-10-01" }] }));
+
+      const result = await getPricesInRange("ethusdt", 1440, "2024-01-01", "2024-12-31");
+      expect(result.length).toBeGreaterThan(0);
+      expect(pool.query).toHaveBeenCalled();
+    });
+
+    it("should throw error if no rows returned", async () => {
+      pool.query.and.returnValue(Promise.resolve({ rows: null }));
+
+      await expectAsync(
+        getPricesInRange("ethusdt", 1440, "2024-01-01", "2024-12-31")
+      ).toBeRejectedWithError(/price data not found/);
+    });
+  });
+
+  describe("insertSymbolData", () => {
+    it("should insert and update ticks", async () => {
+      pool.query.and.returnValue(Promise.resolve({
+        rows: [{ was_inserted: true }, { was_inserted: false }]
+      }));
+
+      const mockTicks = [
+        { symbol: "btcusdt", timeframe: 60, timestamp: new Date(), open: 1, high: 2, low: 1, close: 2, volume: 10 },
+        { symbol: "btcusdt", timeframe: 60, timestamp: new Date(), open: 2, high: 3, low: 2, close: 3, volume: 20 }
+      ];
+
+      const result = await insertSymbolData(mockTicks);
+      expect(result.inserted).toBe(1);
+      expect(result.updated).toBe(1);
+      expect(result.message).toContain("btcusdt-60");
+    });
+  });
+
+  describe("deleteSymbolByTimeframe", () => {
+    it("should delete records by symbol and timeframe", async () => {
+      pool.query.and.returnValue(Promise.resolve({ rows: [{ symbol: "adausdt" }] }));
+
+      const result = await deleteSymbolByTimeframe("adausdt", 240);
+      expect(result).toEqual([{ symbol: "adausdt" }]);
+      expect(pool.query).toHaveBeenCalled();
+    });
+  });
+
+  describe("deleteSymbol", () => {
+    it("should delete all records by symbol", async () => {
+      pool.query.and.returnValue(Promise.resolve({ rows: [{ symbol: "ethusdt" }] }));
+
+      const result = await deleteSymbol("ethusdt");
+      expect(result).toEqual([{ symbol: "ethusdt" }]);
+      expect(pool.query).toHaveBeenCalled();
+    });
+  });
+
 });

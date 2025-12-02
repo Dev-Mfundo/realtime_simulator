@@ -1,17 +1,18 @@
 # Project Summary
-## Market Data API
+## Market Data API Endpoints
+### This API provides endpoints for managing and querying market symbol price data with basic authentication protection.
 
-### Setup
+# Setup
 ```
 npm install       # Install dependencies
 npm run dev       # Start development server - nodemon
-npm test          # Run tests - jasmine + superset
+npm test          # Run tests - jasmine
 npm start         # Start production server
 npm run lint      # Runs lint
 npm run format    # Prettify code
 ```
 
-### Environment Variables (.env)
+# Environment Variables (.env)
 - Create a .env file in the root directory with the following keys:
 ```
 PORT=xxxx
@@ -24,98 +25,174 @@ CORS_ORIGIN=https://frontend-domain
 API_KEY=xxxx
 ```
 
-### Data
-- history_data - acts as database
-- Download CSV files from: https://forexsb.com/historical-forex-data
-- Save each symbol in its own directory using the format below:
 
-```
-# e.g data for gold
-/xauusd/
-       ├── xauusd_1m.csv
-       ├── xauusd_5m.csv
-       ├── xauusd_15m.csv
-       ├── xauusd_30m.csv
-       ├── xauusd_1h.csv
-       ├── xauusd_4h.csv
-       └── xauusd_1d.csv
-```
-- The application will able to ready it if only saved in this format and structure style
-- If you encounter a “Malformed line” error, re-download and rename the file.
+#  API - Endpoint
+## Authentication
+### All endpoints require API key authentication via the keyAuth middleware. Include your API key in the request headers.
 
-- Supported Symbols
-```
-btcusd
-gbpnzd
-gbpjpy
-gbpaud
-us100
-us30
-usdjpy
-usoil
-xauusd
-```
+# API Endpoints
 
-###  API - Endpoint
-```
-POST /api/market/v1/symbol
-```
+| Method | Endpoint | Description |
+|--------|---------|-------------|
+| DELETE | `/api/market/v1/symbol/deleteBySymbol` | Delete all price data for a specific symbol |
+| DELETE | `/api/market/v1/symbol/deleteBySymbolAndTimeframe` | Delete price data for a specific symbol and timeframe |
+| POST   | `/api/market/v1/symbol/query/range` | Retrieve price data for a symbol within a specific time range |
+| GET    | `/api/market/v1/symbol/allSymbols` | Retrieve all available symbols |
+| POST   | `/api/market/v1/symbol/query` | Retrieve price data for a specific symbol (latest or filtered by criteria) |
 
- - Request - POST
+
+1. Delete Symbol Data
+DELETE api/market/v1/symbol/deleteBySymbol
+Delete all price data for a specific symbol.
 ```
-# e.g
+Request Body:
+
+json
 {
-  symbol: "xauusd",
-  timeframe: "5m"
+  "symbol": "BTCUSDT"
 }
+Response: Success confirmation message
+```
+2. Delete Symbol Data by Timeframe
+DELETE api/market/v1/symbol/deleteBySymbolAndTimeframe
+Delete price data for a specific symbol and timeframe.
+```
+Request Body:
 
+json
+{
+  "symbol": "BTCUSDT",
+  "timeframe": 60
+}
+Response: Success confirmation message
 ```
- - Response
+3. Get Prices in Range
+POST api/market/v1/symbol/query/range
+Retrieve price data for a symbol within a specific time range.
 ```
-[
-  {
-    "timestamp": "2024-07-26 12:00",
-    "open": 67288.2,
-    "high": 67964.7,
-    "low": 66874.8,
-    "close": 67530.9,
-    "volume": 8
-  },
-  {
-    "timestamp": "2024-07-26 12:05",
-    "open": 67284.2,
-    "high": 67965.7,
-    "low": 66871.8,
-    "close": 67531.9,
-    "volume": 6
-  },
-  ...
-]
-```
+Request Body:
 
-- Usage
-```
-# Frontend
-const apiKey = "your_secret_key";
+json
+{
+  "symbol": "BTCUSDT",
+  "startTime": "2023-01-01T00:00:00Z",
+  "endTime": "2023-01-31T23:59:59Z",
+  "timeframe": 60
+}
+Response:
 
-fetch("https://domain-url/api/market/v1/symbol/price", {
-  method: 'POST',
-  headers: {
-    'x-api-key': apiKey,
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    symbol: "xauusd",
-    timeframe: "5m"
-  })
-})
-  .then(res => res.json())
-  .then(data => console.log(data))
-  .catch(err => console.error("API error:", err));
-// And yes there's axios also, don't forget the API KEY
+json
+{
+  "symbol": "BTCUSDT",
+  "timeframe": 60,
+  "prices": [
+    {
+      "timestamp": "2023-01-01T00:00:00Z",
+      "open": 16500.00,
+      "high": 16600.00,
+      "low": 16450.00,
+      "close": 16575.00,
+      "volume": 1250.50
+    }
+    // ... more price data
+  ]
+}
 ```
+4. Get All Symbols
+GET api/market/v1/symbol/allSymbols
+Retrieve a list of all available symbols in the system.
+```
+Request Parameters: None
 
-## Notes
-- Only requests with a valid x-api-key header will be authorized.
-- Data must follow the naming and directory structure for the API to read it correctly.
-- Rate limiting and security headers are applied via middleware.
+Response:
+
+json
+{
+  "symbols": ["BTCUSDT", "ETHUSDT", "ADAUSDT", "SOLUSDT"]
+}
+```
+5. Get Symbol Data
+POST api/market/v1/symbol/query
+Retrieve price data for a specific symbol (latest or by criteria).
+```
+Request Body:
+
+json
+{
+  "symbol": "BTCUSDT",
+  "limit": 100,
+  "timeframe": 60
+}
+Response:
+
+json
+{
+  "symbol": "BTCUSDT",
+  "timeframe": 60,
+  "data": [
+    {
+      "timestamp": "2023-12-01T00:00:00Z",
+      "open": 16500.00,
+      "high": 16600.00,
+      "low": 16450.00,
+      "close": 16575.00,
+      "volume": 1250.50
+    }
+    // ... more price candles
+  ]
+}
+```
+Usage Examples
+cURL Examples
+Get All Symbols:
+```
+bash
+curl -X GET "http://site/api/market/v1/symbol/allSymbols" \
+  -H "X-API-Key: your-api-key-here"
+```
+Get Prices in Range:
+```
+bash
+curl -X POST "http://site/api/market/v1/symbol/query/range" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: your-api-key-here" \
+  -d '{
+    "symbol": "BTCUSDT",
+    "startTime": "2023-01-01T00:00:00Z",
+    "endTime": "2023-01-02T00:00:00Z",
+    "timeframe": 60
+  }'
+```
+Notes
+
+- Symbols should be in uppercase (e.g., "BTCUSDT"). Not Strict
+
+- Common timeframes: 1, 5, 15, 30, 60, 120, 240, 1440
+
+- Delete operations are permanent and cannot be undone
+
+# rror Responses
+### All endpoints return standard HTTP status codes:
+```
+200: Success
+
+400: Bad Request (invalid parameters)
+
+401: Unauthorized (invalid/missing API key)
+
+404: Not Found (symbol not found) / unknown endpoints
+
+500: Internal Server Error
+```
+### Typical response
+```
+{
+	success: boolean,
+	content: array
+}
+or
+{
+	success: boolean,
+	error: message
+}
+```

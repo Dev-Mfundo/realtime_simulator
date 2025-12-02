@@ -28,4 +28,4 @@ const insertSymbolPrice = async (req, res, next) => {
   }
 }
 
-module.exports = insertSymbolPrice
+module.exports = {insertSymbolPrice}

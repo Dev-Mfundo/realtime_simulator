@@ -8,6 +8,13 @@ const {
   validateMultipleSymbols,
 } = require("./validators");
 
+
+const ListAllSymbols=async()=>{
+  const query = `SELECT DISTINCT symbol FROM SymbolPrice;`
+  const result = await pool.query(query)
+  return result.rows
+}
+
 const getSymbolPrice = async (symbol, timeframe, limit = 2000) => {
   symbol = validateSymbol(symbol);
   timeframe = validateTimeframe(timeframe);
@@ -20,35 +27,11 @@ const getSymbolPrice = async (symbol, timeframe, limit = 2000) => {
    LIMIT $3
   `;
   const result = await pool.query(query, [symbol, timeframe, limit]);
-  if(!result.rows){
-    throw new Error(`${symbol}: price data not found `)
-  }
   return result.rows;
 };
 
-const getLatestPriceOnly = async (symbol, timeframe) => {
-  symbol = validateSymbol(symbol);
-  timeframe = validateTimeframe(timeframe);
-  const query = `
-  SELECT * FROM SymbolPrice
-  WHERE symbol=$1 AND timeframe = $2
-  ORDER BY timestamp DESC
-  LIMIT 1
-  `;
-  const result = await pool.query(query, [symbol, timeframe]);
-  if(!result.rows.[0]){
-    throw new Error(`${symbol}: price data not found `)
-  }
-  return result.rows[0];
-};
 
-const getPricesInRange = async (
-  symbol,
-  timeframe,
-  startDate,
-  endDate,
-  limit = 1000,
-) => {
+const getPricesInRange=async(symbol,timeframe,startDate,endDate,limit = 1000)=>{
   symbol = validateSymbol(symbol);
   timeframe = validateTimeframe(timeframe);
   limit = validateLimit(limit);
@@ -77,20 +60,6 @@ const getPricesInRange = async (
   return result.rows;
 };
 
-const getMultipleSymbols = async (symbols, timeframe, limit = 500) => {
-  symbols = validateMultipleSymbols(symbols);
-  timeframe = validateTimeframe(timeframe);
-  limit = validateLimit(limit);
-  const query = `
-    SELECT * FROM SymbolPrice
-    WHERE symbol = ANY($1) AND timeframe = $2
-    ORDER BY symbol, timestamp DESC
-    LIMIT $3
-  `;
-  const result = await pool.query(query, [symbols, timeframe, limit]);
-
-  return result.rows;
-};
 
 const insertSymbolData = async (ticks) => {
   const values = ticks.map((tick) => [
@@ -132,10 +101,31 @@ const insertSymbolData = async (ticks) => {
   }
 };
 
+const deleteSymbolByTimeframe=async(symbol, timeframe)=>{
+  symbol = validateSymbol(symbol);
+  timeframe = validateTimeframe(timeframe);
+  const query = `DELETE FROM SymbolPrice
+   WHERE symbol=$1 AND timeframe=$2 
+  RETURNING *;`
+  const result = await pool.query(query, [symbol, timeframe])
+  return result.rows
+}
+
+const deleteSymbol=async(symbol)=>{
+  symbol = validateSymbol(symbol);
+  const query = `DELETE FROM SymbolPrice
+   WHERE symbol=$1 
+  RETURNING *;`
+  const result = await pool.query(query, [symbol])
+  return result.rows
+}
+
+
 module.exports = {
   insertSymbolData,
   getSymbolPrice,
-  getMultipleSymbols,
-  getLatestPriceOnly,
   getPricesInRange,
+  ListAllSymbols,
+  deleteSymbolByTimeframe,
+  deleteSymbol
 };

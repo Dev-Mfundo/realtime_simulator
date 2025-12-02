@@ -31,7 +31,7 @@ class SymbolDataStream {
     for await (const line of rl) {
       if (data.length >= maxRecords) {
         throw new ValidationError(
-          `File exceeds maximum allowed records (${maxRecords}). Please split your data.`,
+          `File exceeds maximum allowed records: ${maxRecords} max. Please split your data.`,
         );
       }
 

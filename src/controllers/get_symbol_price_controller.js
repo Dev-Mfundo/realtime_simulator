@@ -1,8 +1,7 @@
-const { validateSymbol, validateTimeframe } = require("../utils/validators");
 const {getSymbolPrice} = require("../utils/helpers")
 
 const getSymbolData = async (req, res, next) => {
-  const { symbol, timeframe, limit } = req.body;
+  const { symbol, timeframe, limit} = req.body;
 
   try {
     const result =  await getSymbolPrice(symbol,timeframe,limit)

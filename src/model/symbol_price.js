@@ -32,7 +32,7 @@ SELECT create_hypertable('SymbolPrice', 'timestamp', if_not_exists => TRUE, migr
   `);
 
     await pool.query(`
-    SELECT add_compression_policy('SymbolPrice', INTERVAL '1 day', if_not_exists => TRUE)
+    SELECT add_compression_policy('SymbolPrice', INTERVAL '30 day', if_not_exists => TRUE)
     WHERE NOT EXISTS (
     SELECT 1 FROM timescaledb_information.compression_settings
     WHERE hypertable_name = 'SymbolPrice'
