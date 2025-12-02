@@ -1,18 +1,41 @@
-# Project Summary
-## Market Data API Endpoints
-### This API provides endpoints for managing and querying market symbol price data with basic authentication protection.
+# Project Summary {STILL IN DEVELOPMENT BUT FUNCTIONAL}
+## Market Data API Endpoints 
+
+## Project Purpose
+
+- This project is primarily designed to run locally in a container to simulate real market data endpoints for development purposes. 
+- Most market data APIs are either paid or have limited free tiers. By using this project, developers can have **unlimited access to market data** while working in a development environment.
+### Important Notes
+
+- These endpoints are **not intended for production use**, as most of the data is historical.  
+- If your data source is legitimate, the historical data provided here will match the data available from any forex exchange.  
+
+### Verified Historical Data Source
+
+- [https://forexsb.com/historical-forex-data](https://forexsb.com/historical-forex-data)
+
+### Uses
+
+- Build a market scanner to analyze and predict future prices.  
+- Create a backtesting application for retail traders.  
+- Develop a trading bot to simulate strategies.  
+
+Once your application is ready, you can then integrate data from paid API providers for production use.
+
+
+- This API provides endpoints for managing and querying market symbol price data with basic authentication protection.
 
 # Setup
 ```
 npm install       # Install dependencies
 npm run dev       # Start development server - nodemon
-npm test          # Run tests - jasmine
+npm test          # Run tests
 npm start         # Start production server
 npm run lint      # Runs lint
 npm run format    # Prettify code
 ```
 
-# Environment Variables (.env)
+## Environment Variables (.env)
 - Create a .env file in the root directory with the following keys:
 ```
 PORT=xxxx
@@ -26,9 +49,9 @@ API_KEY=xxxx
 ```
 
 
-#  API - Endpoint
-## Authentication
-### All endpoints require API key authentication via the keyAuth middleware. Include your API key in the request headers.
+##  API - Endpoint
+### Authentication
+- All endpoints require API key authentication via the keyAuth middleware. Include your API key in the request headers.
 
 # API Endpoints
 
@@ -171,7 +194,7 @@ Notes
 
 - Delete operations are permanent and cannot be undone
 
-# rror Responses
+## Error Responses
 ### All endpoints return standard HTTP status codes:
 ```
 200: Success
