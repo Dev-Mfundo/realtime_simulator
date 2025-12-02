@@ -22,9 +22,9 @@ app.use(express.json());
 (async () => {
   try {
     await setupTimescaleTable();
-    logger.info("TimescaleDB tables ready");
+    logger.info("Database ready");
   } catch (err) {
-    logger.error("Failed to initialize TimescaleDB: " + err.message);
+    logger.error("Failed to initialize Database: ",err.message);
   }
 })();
 
