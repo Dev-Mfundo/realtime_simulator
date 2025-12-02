@@ -40,8 +40,10 @@ API_KEY=xxxx
 
 ## Docker compose
 ```
-
+docker compose up 
+docker compose up -d
 ```
+- Make sure the database is up first before running the node-app
 
 # Setup
 ```

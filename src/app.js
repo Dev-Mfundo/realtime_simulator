@@ -1,4 +1,4 @@
 const { app } = require("./index");
 const PORT = process.env.PORT || 3001;
 
-app.listen(PORT, () => console.log(`http://localhost:${YOUR_PORT}`));
+app.listen(PORT, () => console.log(`Link: http://localhost:${PORT}`));
