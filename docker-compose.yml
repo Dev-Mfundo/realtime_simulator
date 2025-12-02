@@ -3,7 +3,7 @@ services:
     image: timescale/timescaledb:2.23.1-pg16
     restart: unless-stopped
     ports:
-      - "5433:5433"
+      - "5432:5432"
     environment:
       POSTGRES_USER: $POSTGRES_USER
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
@@ -17,7 +17,7 @@ services:
     image: adminer:4.8.1
     restart: unless-stopped
     ports:
-      - "8080:8080" 
+      - "8080:8080"
 
   rlt-app:
     build: .
@@ -30,7 +30,7 @@ services:
       - .env
     environment:
       DB_HOST: timescaledb
-      DB_PORT: 5433
+      DB_PORT: 5432
       DB_USER: $POSTGRES_USER
       DB_PASSWORD: $POSTGRES_PASSWORD
       DB_NAME: $POSTGRES_DATABASE
