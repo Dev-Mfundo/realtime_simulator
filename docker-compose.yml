@@ -19,5 +19,19 @@ services:
     ports:
       - "8080:8080" 
 
+  rlt-app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      - timescaledb
+    ports:
+      - "3001:3001"
+    environment:
+      DB_HOST: timescaledb
+      DB_PORT: 5432
+      DB_USER: $POSTGRES_USER
+      DB_PASSWORD: $POSTGRES_PASSWORD
+      DB_NAME: $POSTGRES_DATABASE
+
 volumes:
   realtime_simulator_data:
