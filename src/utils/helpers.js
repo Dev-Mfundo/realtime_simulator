@@ -108,7 +108,10 @@ const deleteSymbolByTimeframe=async(symbol, timeframe)=>{
    WHERE symbol=$1 AND timeframe=$2 
   RETURNING *;`
   const result = await pool.query(query, [symbol, timeframe])
-  return result.rows
+  return {
+    symbol: result.rows[0].symbol,
+    timeframe: result.rows[0].timeframe
+  }
 }
 
 const deleteSymbol=async(symbol)=>{
@@ -117,7 +120,7 @@ const deleteSymbol=async(symbol)=>{
    WHERE symbol=$1 
   RETURNING *;`
   const result = await pool.query(query, [symbol])
-  return result.rows
+  return result.rows[0].symbol
 }
 
 

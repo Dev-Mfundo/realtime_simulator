@@ -39,7 +39,6 @@ API_KEY=xxxx
 ```
 
 ## Docker compose
-- This will run the app
 ```
 docker compose build
 docker compose up
@@ -48,7 +47,7 @@ docker compose up
 ##  API - Endpoint
 ### Authentication
 - All endpoints require API key authentication via the keyAuth middleware. Include your API key in the request headers.
-
+- API key can be created using api key generators and save in the .env-file
 # API Endpoints
 
 | Method | Endpoint | Description |
