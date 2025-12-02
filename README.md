@@ -25,6 +25,24 @@ Once your application is ready, you can then integrate data from paid API provid
 
 - This API provides endpoints for managing and querying market symbol price data with basic authentication protection.
 
+## Environment Variables (.env)
+- Create a .env file in the root directory with the following keys:
+```
+PORT=3001
+POSTGRES_HOST=xxxx
+POSTGRES_USER=xxxx
+POSTGRES_PASSWORD=xxxx
+POSTGRES_DB=xxxxx
+POSTGRES_PORT=5432
+CORS_ORIGIN=https://frontend-domain
+API_KEY=xxxx
+```
+
+## Docker compose
+```
+
+```
+
 # Setup
 ```
 npm install       # Install dependencies
@@ -33,19 +51,6 @@ npm test          # Run tests
 npm start         # Start production server
 npm run lint      # Runs lint
 npm run format    # Prettify code
-```
-
-## Environment Variables (.env)
-- Create a .env file in the root directory with the following keys:
-```
-PORT=xxxx
-POSTGRES_HOST=xxxx
-POSTGRES_USER=xxxx
-POSTGRES_PASSWORD=xxxx
-POSTGRES_DB=xxxxx
-POSTGRES_PORT=5432
-CORS_ORIGIN=https://frontend-domain
-API_KEY=xxxx
 ```
 
 
