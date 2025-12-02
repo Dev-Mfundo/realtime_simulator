@@ -15,11 +15,17 @@ const {
   limiter,
 } = require("./utils/middleware");
 const { setupTimescaleTable } = require("./model/symbol_price");
+const {logger} = require("./utils/logger");
 
 app.use(express.json());
 
 (async () => {
+  try {
     await setupTimescaleTable();
+    logger.info("TimescaleDB tables ready");
+  } catch (err) {
+    logger.error("Failed to initialize TimescaleDB: " + err.message);
+  }
 })();
 
 
@@ -27,6 +33,11 @@ app.use(limiter);
 app.use(hpp());
 app.use(helmet());
 app.use(cors(corsOptions));
+
+app.use((req, res, next) => {
+  logger.info(`HTTP ${req.method} ${req.originalUrl}`);
+  next();
+});
 
 app.use("/api", getSymbolDataRoute);
 app.use("/api", getPricesInRangeRoute);

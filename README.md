@@ -39,22 +39,11 @@ API_KEY=xxxx
 ```
 
 ## Docker compose
+- This will run the app
 ```
-docker compose up 
-docker compose up -d
+docker compose build
+docker compose up
 ```
-- Make sure the database is up first before running the node-app
-
-# Setup
-```
-npm install       # Install dependencies
-npm run dev       # Start development server - nodemon
-npm test          # Run tests
-npm start         # Start production server
-npm run lint      # Runs lint
-npm run format    # Prettify code
-```
-
 
 ##  API - Endpoint
 ### Authentication
@@ -177,15 +166,15 @@ cURL Examples
 Get All Symbols:
 ```
 bash
-curl -X GET "http://site/api/market/v1/symbol/allSymbols" \
-  -H "X-API-Key: your-api-key-here"
+curl -X GET "http://localhost:3001/api/market/v1/symbol/allSymbols" \
+  -H "X-API-Key: api-key-here"
 ```
 Get Prices in Range:
 ```
 bash
-curl -X POST "http://site/api/market/v1/symbol/query/range" \
+curl -X POST "http://localhost:3001/api/market/v1/symbol/query/range" \
   -H "Content-Type: application/json" \
-  -H "X-API-Key: your-api-key-here" \
+  -H "X-API-Key: api-key-here" \
   -d '{
     "symbol": "BTCUSDT",
     "startTime": "2023-01-01T00:00:00Z",
@@ -210,7 +199,7 @@ Notes
 
 401: Unauthorized (invalid/missing API key)
 
-404: Not Found (symbol not found) / unknown endpoints
+404: Not Found (symbol not found) / Unknown endpoints
 
 500: Internal Server Error
 ```
